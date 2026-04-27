@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>روافد - للنشر والقراءة</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-left">
+            <img src="assets/logo.png" alt="Logo" class="site-logo">
+        </div>
+        <div class="header-center">
+            <h1 class="site-name">روافد</h1>
+        </div>
+        <div class="header-right">
+            <button id="adminBtn" class="admin-btn">🔑 دخول الإدارة</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="row1" class="novel-row"></div>
+        <div id="row2" class="novel-row"></div>
+    </main>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h3>تسجيل دخول المشرف</h3>
+            <input type="text" id="username" placeholder="اسم المستخدم">
+            <input type="password" id="password" placeholder="كلمة المرور">
+            <button id="doLogin">دخول</button>
+            <p id="loginError" class="error-text"></p>
+        </div>
+    </div>
+
+    <div id="adminPanel" class="modal">
+        <div class="modal-content admin-box">
+            <h2>إضافة رواية جديدة</h2>
+            <input type="text" id="novelTitle" placeholder="اسم الرواية">
+            <input type="text" id="novelCover" placeholder="رابط صورة الغلاف">
+            <input type="text" id="novelPDF" placeholder="رابط ملف PDF">
+            <button id="saveNovel">نشر الرواية للجميع</button>
+            <button onclick="closeModal('adminPanel')" class="close-btn">إغلاق</button>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-content detail-box">
+            <span class="close-x" onclick="closeModal('detailModal')">&times;</span>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
+
