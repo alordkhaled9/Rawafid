@@ -1,0 +1,100 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSy...", 
+    authDomain: "your-app.firebaseapp.com",
+    projectId: "your-app-id",
+    storageBucket: "your-app.appspot.com",
+    messagingSenderId: "...",
+    appId: "..."
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// الإدارة
+const ADMIN_USER = "abu7amza";
+const ADMIN_PASS = "asd321321580";
+
+// عند التشغيل
+window.onload = loadNovels;
+
+// جلب الروايات للجميع
+async function loadNovels() {
+    const querySnapshot = await getDocs(collection(db, "novels"));
+    const row1 = document.getElementById('row1');
+    const row2 = document.getElementById('row2');
+    row1.innerHTML = ""; row2.innerHTML = "";
+
+    let index = 0;
+    querySnapshot.forEach((doc) => {
+        const novel = doc.data();
+        const id = doc.id;
+        const html = `
+            <div class="novel-card" onclick="showDetail('${id}')">
+                <img src="${novel.cover}">
+                <h4>${novel.title}</h4>
+                <p style="font-size:11px; color:#aaa;">👁️ ${novel.reads} | 📥 ${novel.downloads}</p>
+            </div>
+        `;
+        if (index % 2 === 0) row1.innerHTML += html;
+        else row2.innerHTML += html;
+        index++;
+    });
+}
+
+// تسجيل دخول
+document.getElementById('doLogin').onclick = () => {
+    const u = document.getElementById('username').value;
+    const p = document.getElementById('password').value;
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'flex';
+    } else {
+        document.getElementById('loginError').innerText = "خطأ في البيانات!";
+    }
+};
+
+// إضافة رواية جديدة للسحاب
+document.getElementById('saveNovel').onclick = async () => {
+    const title = document.getElementById('novelTitle').value;
+    const cover = document.getElementById('novelCover').value;
+    const pdf = document.getElementById('novelPDF').value;
+
+    await addDoc(collection(db, "novels"), {
+        title: title, cover: cover, pdf: pdf, reads: 0, downloads: 0
+    });
+    alert("تم النشر بنجاح!");
+    location.reload();
+};
+
+// فتح تفاصيل الرواية وزيادة القراءة
+window.showDetail = async (id) => {
+    const querySnapshot = await getDocs(collection(db, "novels"));
+    querySnapshot.forEach(async (d) => {
+        if(d.id === id) {
+            const n = d.data();
+            document.getElementById('detailContent').innerHTML = `
+                <h2>${n.title}</h2>
+                <img src="${n.cover}" style="width:150px; border-radius:10px;">
+                <div style="margin-top:20px;">
+                    <a href="${n.pdf}" target="_blank" onclick="updateStats('${id}', 'reads')" class="btn-link">قراءة</a>
+                    <a href="${n.pdf}" download onclick="updateStats('${id}', 'downloads')" class="btn-link">تحميل PDF</a>
+                </div>
+            `;
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+    });
+};
+
+// تحديث الإحصائيات في السحاب
+window.updateStats = async (id, field) => {
+    const ref = doc(db, "novels", id);
+    await updateDoc(ref, { [field]: increment(1) });
+};
+
+// وظائف الإغلاق
+window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+document.getElementById('adminBtn').onclick = () => document.getElementById('loginModal').style.display = 'flex';
+
